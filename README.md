@@ -103,6 +103,12 @@ The application uses Docker Compose for container orchestration with the followi
 - 🐳 **Docker Support**: Complete containerization for easy deployment
 - 📊 **Database Integration**: PostgreSQL with proper schema and relationships
 
+## 📸 Output Results
+
+![Movie Review Backend](Movie%20Review%20Backend.png)
+
+![Movie Review Frontend](Movie%20Review%20Frontend.png)
+
 ## 📋 Prerequisites
 
 Before running this application, make sure you have the following installed:
