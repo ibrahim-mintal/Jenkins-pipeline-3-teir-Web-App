@@ -1,6 +1,63 @@
-# 🎬 Movie Review App
+# 🎬 Movie Review App with Automated CI/CD Pipeline
 
-A full-stack web application for managing and reviewing movies, built with React, Node.js, Express, and PostgreSQL. The app integrates with the OMDB API to automatically fetch movie posters and information.
+A full-stack web application for managing and reviewing movies, built with React, Node.js, Express, and PostgreSQL. The app integrates with the OMDB API to automatically fetch movie posters and information. This project also includes an **Automated CI/CD Pipeline** for containerized deployment using Docker, Jenkins, and Ansible.
+
+---
+
+## 🔧 Tools Involved
+
+- **Docker** → Containerize frontend, backend, and database.
+- **Docker Compose** → Manage multi-container app locally.
+- **Jenkins** → Automate build, test, and deployment pipeline.
+- **Ansible** → Deploy Docker containers to multiple servers (e.g., staging & production).
+
+---
+
+## 🛠️ Project Workflow
+
+1. **Application Setup**
+    - Create a **frontend** (React or simple HTML/NGINX).
+    - Create a **backend** (Flask / Node.js / Spring Boot).
+    - Use a **database** (Postgres or MySQL).
+2. **Dockerization**
+    - Write a `Dockerfile` for frontend + backend.
+    - Use official DB image (Postgres/MySQL).
+    - Create `docker-compose.yml` to run locally.
+3. **Jenkins CI Pipeline**
+    - Jenkins pulls code from GitHub.
+    - Builds Docker images for frontend & backend.
+    - Runs unit tests.
+    - Pushes Docker images to Docker Hub.
+4. **Ansible Deployment (CD)**
+    - Ansible playbooks to:
+        - Install Docker on target servers.
+        - Pull images from Docker Hub.
+        - Start containers with correct networking.
+    - Deploy to **2 environments**: staging + production.
+5. **Final Flow**
+    - Developer pushes code to GitHub.
+    - Jenkins pipeline builds/test/pushes images.
+    - Jenkins triggers Ansible to deploy containers.
+    - App updates automatically on target servers.
+
+---
+
+## 🔥 Bonus Extensions
+
+- Use **Nginx reverse proxy** to route frontend → backend.
+- Add **Blue/Green deployment** using Ansible.
+- Use **Jenkins pipelines as code** (Jenkinsfile).
+- Add **automated integration tests** after deployment.
+
+---
+
+👉 This project will give you **real DevOps hands-on** with:
+
+- **Docker** for microservices.
+- **Jenkins** for CI/CD.
+- **Ansible** for infra automation + deployment.
+
+---
 
 ## 🏗️ Architecture
 
@@ -28,7 +85,6 @@ movie-review-app/
 │   └── init.sql          # Database schema
 └── docker-compose.yml     # Container orchestration
 ```
-
 
 ### Containerized Deployment
 
@@ -88,7 +144,6 @@ docker-compose up -d --build
 - **Admin Panel**: http://localhost:5000/admin
 - **Database**: localhost:5432 (accessible from host)
 
-
 ## 📡 API Endpoints
 
 ### Movies
@@ -124,7 +179,6 @@ The application uses multi-stage Docker builds for optimized production images:
 - **Backend**: Node.js Alpine image with production dependencies
 - **Frontend**: Nginx serving built React app
 - **Database**: PostgreSQL Alpine image with persistent volume
-
 
 ## 🧪 Testing
 
@@ -165,6 +219,89 @@ curl -X POST http://localhost:5000/api/movies \
 - **Frontend**: Use CDN for static assets
 - **Monitoring**: Add logging and monitoring with tools like Prometheus/Grafana
 
+---
+
+# 📅 7-Day DevOps Project Plan
+
+### **Day 1 – Project Setup & App Development**
+
+- ✅ Create a GitHub repo.
+- ✅ Build a simple **3-tier app**:
+    - **Frontend**: React or Nginx static HTML.
+    - **Backend**: Flask / Node.js REST API.
+    - **Database**: MySQL or PostgreSQL.
+- ✅ Run everything locally without Docker first.
+- **Deliverable**: Local app working (frontend talks to backend, backend talks to DB).
+
+---
+
+### **Day 2 – Dockerization**
+
+- ✅ Write `Dockerfile` for backend.
+- ✅ Write `Dockerfile` for frontend.
+- ✅ Use official image for DB.
+- ✅ Create `docker-compose.yml` to run all 3 containers together.
+- ✅ Test app runs via `docker-compose up`.
+- **Deliverable**: Multi-container app running locally.
+
+---
+
+### **Day 3 – Jenkins Setup**
+
+- ✅ Install Jenkins on a local VM or Docker container.
+- ✅ Install plugins: Git, Docker, Pipeline.
+- ✅ Connect Jenkins to GitHub (webhook or polling).
+- ✅ Test a basic job (print "Hello World").
+- **Deliverable**: Jenkins up & connected to GitHub.
+
+---
+
+### **Day 4 – Jenkins CI Pipeline**
+
+- ✅ Write `Jenkinsfile` with stages:
+    1. Pull code from GitHub.
+    2. Build Docker images for frontend & backend.
+    3. Run unit tests (if any).
+    4. Push Docker images to **Docker Hub**.
+- ✅ Trigger pipeline via GitHub push.
+- **Deliverable**: Jenkins pipeline builds & pushes images successfully.
+
+---
+
+### **Day 5 – Ansible Setup**
+
+- ✅ Set up **two target servers** (can be VMs on your machine, e.g., staging + prod).
+- ✅ Install Ansible on Jenkins server or local machine.
+- ✅ Write Ansible playbook:
+    - Install Docker on servers.
+    - Pull images from Docker Hub.
+    - Run containers (frontend, backend, DB).
+- ✅ Test deployment manually.
+- **Deliverable**: App deployed on remote servers via Ansible.
+
+---
+
+### **Day 6 – Jenkins + Ansible Integration**
+
+- ✅ Add **deploy stage** in `Jenkinsfile` that runs Ansible playbook.
+- ✅ Run full pipeline:
+    1. Code commit → Jenkins builds → Docker Hub → Ansible deploys.
+- ✅ Verify app updates automatically on staging/prod servers.
+- **Deliverable**: Fully automated CI/CD pipeline.
+
+---
+
+### **Day 7 – Testing & Enhancements**
+
+- ✅ Push multiple commits → verify pipeline updates app correctly.
+- ✅ Add **reverse proxy (Nginx)** in front of backend + frontend.
+- ✅ (Optional) Add **Blue-Green Deployment** with Ansible.
+- ✅ (Optional) Add integration tests in Jenkins pipeline.
+- ✅ Document the full setup (README with screenshots + commands).
+- **Deliverable**: Completed documented project.
+
+---
+
 ## 🤝 Contributing
 
 1. Fork the repository
@@ -172,4 +309,3 @@ curl -X POST http://localhost:5000/api/movies \
 3. Commit your changes (`git commit -m 'Add amazing feature'`)
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
-
