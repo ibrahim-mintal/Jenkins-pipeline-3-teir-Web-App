@@ -1,0 +1,57 @@
+version: "3.9"
+
+services:
+  # -------------------
+  # Backend API
+  backend:
+    build: ./movie-review-app/backend
+    container_name: movie-backend
+    ports:
+      - "5000:5000"
+    environment:
+      - DB_HOST=db
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres
+      - DB_NAME=moviesdb
+      - OMDB_API_KEY=${OMDB_API_KEY}
+    env_file:
+      - .env
+    depends_on:
+      - db
+    networks:
+      - backend-network
+  # -------------------
+  # Frontend (React → Nginx)
+  frontend:
+    build: ./movie-review-app/frontend
+    container_name: movie-frontend
+    ports:
+      - "3000:80"   # Host:3000 -> Nginx:80
+    depends_on:
+      - backend
+    networks:
+      - frontend-network
+      - backend-network
+  # -------------------
+  # Database (Postgres)
+  db:
+    image: postgres:15-alpine
+    container_name: movie-db
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=moviesdb
+    volumes:
+      - db_data:/var/lib/postgresql/data
+      - ./movie-review-app/db/init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5432:5432"
+    networks:
+      - backend-network
+
+
+volumes:
+  db_data:
+networks:
+  frontend-network:
+  backend-network:
