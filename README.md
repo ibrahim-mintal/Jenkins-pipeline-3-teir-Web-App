@@ -10,6 +10,26 @@ This is a 3-tier web application consisting of:
 - **Backend**: Node.js/Express API server
 - **Database**: PostgreSQL database
 
+## 📁 Project Structure
+
+```
+movie-review-app/
+├── backend/                 # Node.js/Express API
+│   ├── server.js           # Main server file
+│   ├── db.js              # Database connection
+│   ├── package.json       # Backend dependencies
+│   └── Dockerfile         # Backend container config
+├── frontend/               # React application
+│   ├── src/               # React source code
+│   ├── public/            # Static assets
+│   ├── package.json       # Frontend dependencies
+│   └── Dockerfile         # Frontend container config
+├── db/                    # Database files
+│   └── init.sql          # Database schema
+└── docker-compose.yml     # Container orchestration
+```
+
+
 ### Containerized Deployment
 
 The application uses Docker Compose for container orchestration with the following services:
@@ -40,8 +60,7 @@ Before running this application, make sure you have the following installed:
 ### 1. Clone the Repository
 
 ```bash
-git clone <repository-url>
-cd movie-review-app
+git clone https://github.com/ibrahim-mintal/Jenkins-pipeline-3-teir-Web-App.git
 ```
 
 ### 2. Environment Setup
@@ -69,41 +88,6 @@ docker-compose up -d --build
 - **Admin Panel**: http://localhost:5000/admin
 - **Database**: localhost:5432 (accessible from host)
 
-## 🛠️ Development Setup
-
-### Backend Development
-
-```bash
-cd movie-review-app/backend
-
-# Install dependencies
-npm install
-
-# Start development server with auto-reload
-npm run dev
-
-# Or start production server
-npm start
-```
-
-### Frontend Development
-
-```bash
-cd movie-review-app/frontend
-
-# Install dependencies
-npm install
-
-# Start development server
-npm start
-
-# Build for production
-npm run build
-```
-
-### Database Setup
-
-The PostgreSQL database is automatically initialized with the schema defined in `movie-review-app/db/init.sql` when the containers start.
 
 ## 📡 API Endpoints
 
@@ -123,31 +107,6 @@ The PostgreSQL database is automatically initialized with the schema defined in 
 
 - `GET /admin` - View all movies and reviews in a web interface
 
-## 🗄️ Database Schema
-
-### Movies Table
-
-```sql
-CREATE TABLE movies (
-    id SERIAL PRIMARY KEY,
-    title VARCHAR(255) NOT NULL,
-    director VARCHAR(255),
-    year INT,
-    image_url VARCHAR(500)
-);
-```
-
-### Reviews Table
-
-```sql
-CREATE TABLE reviews (
-    id SERIAL PRIMARY KEY,
-    movie_id INT REFERENCES movies(id) ON DELETE CASCADE,
-    review_text TEXT NOT NULL,
-    rating INT CHECK (rating >= 1 AND rating <= 5)
-);
-```
-
 ## 🔧 Configuration
 
 ### Environment Variables
@@ -166,24 +125,6 @@ The application uses multi-stage Docker builds for optimized production images:
 - **Frontend**: Nginx serving built React app
 - **Database**: PostgreSQL Alpine image with persistent volume
 
-## 📁 Project Structure
-
-```
-movie-review-app/
-├── backend/                 # Node.js/Express API
-│   ├── server.js           # Main server file
-│   ├── db.js              # Database connection
-│   ├── package.json       # Backend dependencies
-│   └── Dockerfile         # Backend container config
-├── frontend/               # React application
-│   ├── src/               # React source code
-│   ├── public/            # Static assets
-│   ├── package.json       # Frontend dependencies
-│   └── Dockerfile         # Frontend container config
-├── db/                    # Database files
-│   └── init.sql          # Database schema
-└── docker-compose.yml     # Container orchestration
-```
 
 ## 🧪 Testing
 
@@ -232,18 +173,3 @@ curl -X POST http://localhost:5000/api/movies \
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
 
-## 📝 License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## 🙏 Acknowledgments
-
-- [OMDB API](http://www.omdbapi.com/) for movie data and posters
-- [React](https://reactjs.org/) for the frontend framework
-- [Express.js](https://expressjs.com/) for the backend framework
-- [PostgreSQL](https://www.postgresql.org/) for the database
-- [Docker](https://www.docker.com/) for containerization
-
----
-
-**Happy Reviewing! 🎬🍿**
