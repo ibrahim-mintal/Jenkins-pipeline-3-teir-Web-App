@@ -133,7 +133,7 @@ Create a `.env` file in the root directory:
 OMDB_API_KEY=your_omdb_api_key_here
 ```
 
-### 3. Deploy with Docker Compose
+### 3. Deploy with Docker-Compose
 
 ```bash
 # Build and start all services
