@@ -4,7 +4,7 @@ services:
   # -------------------
   # Backend API
   backend:
-    build: ./movie-review-app/backend
+    image: ibrahimmintal/backend:latest
     container_name: movie-backend
     ports:
       - "5000:5000"
@@ -23,7 +23,7 @@ services:
   # -------------------
   # Frontend (React → Nginx)
   frontend:
-    build: ./movie-review-app/frontend
+    image: ibrahimmintal/frontend:latest 
     container_name: movie-frontend
     ports:
       - "3000:80"   # Host:3000 -> Nginx:80

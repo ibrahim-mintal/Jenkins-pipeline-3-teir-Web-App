@@ -1,55 +1,64 @@
 pipeline {
     agent any
+
     environment {
         DOCKERHUB_CREDENTIALS = credentials('dockerhub-credentials')
-        DOCKERHUB_REPO = 'ibrahimmintal'   // change to your DockerHub username
+        DOCKERHUB_REPO = 'ibrahimmintal'
+        IMAGE_TAG = "v${BUILD_NUMBER}"   // each build: v1, v2, v3...
     }
-        triggers {
-        githubPush()   // Trigger build on GitHub push
+
+    triggers {
+        githubPush()
     }
 
     stages {
-// -------------- Checkout Code --------------
-        stage('Checkout Code') {
+// --------------------- Checkout Repo ---------------------
+        stage('Checkout') {
             steps {
+                cleanWs()
                 git branch: 'main',
                     url: 'https://github.com/ibrahim-mintal/Jenkins-pipeline-3-teir-Web-App.git',
                     credentialsId: 'github'
             }
         }
-// -------------- Build Docker Images --------------
-        stage('Build Docker Images') {
+// --------------------- Build Images ---------------------
+        stage('Build Images') {
             steps {
-                script {
-                    sh 'docker build -t $DOCKERHUB_REPO/frontend:latest ./frontend'
-                    sh 'docker build -t $DOCKERHUB_REPO/backend:latest ./backend'
-                }
+                sh '''
+                docker build -t $DOCKERHUB_REPO/frontend:$IMAGE_TAG ./frontend
+                docker build -t $DOCKERHUB_REPO/backend:$IMAGE_TAG ./backend
+                '''
             }
         }
-// -------------- Push Docker Images --------------
-        stage('Push Docker Images') {
+// --------------------- Push Images to DockerHub ---------------------
+        stage('Push Images') {
             steps {
-                script {
-                    sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
-                    sh 'docker push $DOCKERHUB_REPO/frontend:latest'
-                    sh 'docker push $DOCKERHUB_REPO/backend:latest'
-                }   
-
+                sh '''
+                echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin
+                docker push $DOCKERHUB_REPO/frontend:$IMAGE_TAG
+                docker push $DOCKERHUB_REPO/backend:$IMAGE_TAG
+                docker logout
+                '''
+            }
+        }
+// --------------------- Deploy Application ---------------------
+        stage('Deploy') {
+            steps {
+                withCredentials([file(credentialsId: 'env-file', variable: 'ENV_FILE')]) {
+                    sh '''
+                    cp $ENV_FILE .env
+                    docker-compose down -v
+                    docker-compose up -d --build
+                    rm -f .env
+                    '''
+                }
             }
         }
     }
 
-
     post {
-            always {
-                sh 'docker logout'
-            }
-            success {
-                echo "✅ Build and push completed successfully!"
-            }
-            failure {
-                echo "❌ Build failed!"
-            }
-        }
+        success { echo "✅ Successfully built & pushed images with tag $IMAGE_TAG" }
+        failure { echo "❌ Pipeline failed at build $BUILD_NUMBER" }
+        always { cleanWs() }
+    }
 }
-    
