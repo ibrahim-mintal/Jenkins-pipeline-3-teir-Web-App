@@ -1,18 +1,10 @@
 pipeline {
     agent any
     stages {
-        stage('Build') {
-            steps {
-                echo "Building project ..."
-            }
-        }
-        stage('Test') {
-            steps {
-                echo "Running tests..."
-            }
-        }
+
         stage('Deploy') {
             steps {
+                # I used jenkins credentials to securely store the .env file with ID 'env-file'#
                 withCredentials([file(credentialsId: 'env-file', variable: 'ENV_FILE')]) {
                     sh '''
                     cp $ENV_FILE .env
