@@ -225,6 +225,89 @@ curl -X POST http://localhost:5000/api/movies \
 - **Frontend**: Use CDN for static assets
 - **Monitoring**: Add logging and monitoring with tools like Prometheus/Grafana
 
+## Deployment Methods
+
+This project supports multiple deployment strategies to suit different environments and requirements.
+
+### 1. Local Deployment with Jenkins Pipeline
+
+Deploy the application locally on the Jenkins server using Docker Compose.
+
+- **Using Jenkinsfile-Deploy**: A simplified pipeline focused solely on deployment.
+  - Copies the `.env` file from Jenkins credentials.
+  - Runs `docker-compose down -v` to clean up previous containers.
+  - Executes `docker-compose up -d --build` to build and start services.
+- **Using Full Jenkinsfile**: Includes complete CI/CD with build, test, push, and deploy stages.
+  - Builds Docker images for frontend and backend.
+  - Pushes images to Docker Hub.
+  - Deploys locally using Docker Compose.
+
+**Command to trigger**:
+- Configure Jenkins job with the respective `Jenkinsfile`.
+- Pipeline triggers on GitHub push or manual build.
+
+### 2. Remote Deployment via Ansible Playbook
+
+Deploy the application to multiple remote servers using Ansible automation.
+
+- **Prerequisites**:
+  - Ansible installed on control machine.
+  - SSH access configured to target servers.
+  - `inventory.ini` configured with server details.
+- **Deployment Process**:
+  - Installs Docker and required packages on target servers.
+  - Syncs application files to `/app` directory.
+  - Generates environment files using Jinja2 templates.
+  - Runs `docker-compose up -d --build` on each server.
+
+**Command to deploy**:
+```bash
+ansible-playbook -i inventory.ini playbook.yml
+```
+
+This method is ideal for deploying to staging and production environments across multiple servers.
+
+### Next Step: Integrate Ansible with Jenkins
+
+To achieve fully automated CI/CD with remote deployment:
+
+1. **Modify Jenkinsfile**: Add a new "Deploy Remote" stage after "Push Images".
+2. **Install Ansible on Jenkins**: Ensure Ansible is available in the Jenkins environment.
+3. **Update Pipeline**:
+   ```groovy
+   stage('Deploy Remote') {
+       steps {
+           sh 'ansible-playbook -i inventory.ini playbook.yml'
+       }
+   }
+   ```
+4. **Benefits**:
+   - Complete automation: Code commit → Build → Push → Remote Deploy.
+   - Consistent deployments across environments.
+   - Rollback capabilities using tagged images.
+
+This integration will streamline the DevOps workflow and enable continuous deployment to production.
+
+## Deployment Results
+
+Below are screenshots showing successful deployments on the target servers.
+
+### Server 1 (debian1 - 192.168.24.129)
+
+| Frontend | Backend |
+|----------|---------|
+| ![Server1 Frontend](server1-frontend.png) | ![Server1 Backend](server1-backend.png) |
+
+### Server 2 (debian2 - 192.168.24.130)
+
+| Frontend | Backend |
+|----------|---------|
+| ![Server2 Frontend](server2-frontend.png) | ![Server2 Backend](server2-backend.png) |
+
+### Ansible Deployment Output
+
+![Ansible Result](Ansible%20Result.png)
+
 ---
 
 # 📅 7-Day DevOps Project Plan
