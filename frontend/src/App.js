@@ -5,7 +5,7 @@ import MovieList from './MovieList';
 import ReviewList from './ReviewList';
 import ReviewForm from './ReviewForm';
 
-const API = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
+const API = `${process.env.REACT_APP_API_URL}/api`;
 
 function App() {
   const [movies, setMovies] = useState([]);

@@ -4,7 +4,7 @@ services:
   # -------------------
   # Backend API
   backend:
-    image: ibrahimmintal/backend:latest
+    build: ./backend
     container_name: movie-backend
     ports:
       - "5000:5000"
@@ -20,18 +20,20 @@ services:
       - db
     networks:
       - backend-network
+      - frontend-network
   # -------------------
   # Frontend (React → Nginx)
   frontend:
-    image: ibrahimmintal/frontend:latest 
+    build: ./frontend
     container_name: movie-frontend
     ports:
       - "3000:80"   # Host:3000 -> Nginx:80
     depends_on:
       - backend
+    environment:
+      - REACT_APP_API_URL=http://backend:5000
     networks:
       - frontend-network
-      - backend-network
   # -------------------
   # Database (Postgres)
   db:
@@ -52,6 +54,7 @@ services:
 
 volumes:
   db_data:
+  
 networks:
   frontend-network:
   backend-network:

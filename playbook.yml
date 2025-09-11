@@ -1,0 +1,63 @@
+---
+- name: Deploy 3-tier Movie Review App via Docker Compose
+  hosts: all
+  become: true
+
+  tasks:
+    # --------------------------
+    # Ensure Docker Installed
+    # --------------------------
+    - name: Ensure required packages are installed
+      apt:
+        name: "{{ item }}"
+        state: present
+        update_cache: yes
+      loop:
+        - docker.io
+        - docker-compose-plugin
+        - git
+        - rsync
+
+    - name: Ensure Docker service is running
+      service:
+        name: docker
+        state: started
+        enabled: true
+
+    # --------------------------
+    # Project Sync
+    # --------------------------
+    - name: Create /app directory 
+      file:
+        path: /app
+        state: directory
+        mode: '0755'
+
+    - name: Sync application files to remote
+      ansible.posix.synchronize:
+        src: "./"
+        dest: /app
+        rsync_opts:
+          - "--exclude=.git"
+          - "--exclude=node_modules"
+          - "--exclude=*.log"
+          - "--exclude=*.md"
+          - "--exclude=tests"
+
+    # --------------------------
+    # Environment File
+    # --------------------------
+    - name: Generate frontend .env file for each server
+      template:
+        src: templates/frontend.env.j2
+        dest: /app/frontend/.env
+        owner: root
+        group: root
+        mode: '0644'
+
+    # --------------------------
+    # Deploy with Docker Compose
+    # --------------------------
+    - name: Run docker-compose to build and start services
+      shell: |
+        cd /app && docker-compose up -d --build
