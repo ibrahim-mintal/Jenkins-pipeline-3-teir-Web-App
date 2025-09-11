@@ -1,5 +1,8 @@
 pipeline {
     agent any
+    environment {
+    OMDB_API_KEY = credentials('omdb-api-key')
+}
     stages {
         stage('Build') {
             steps {
@@ -13,10 +16,16 @@ pipeline {
         }
         stage('Deploy') {
             steps {
-                sh 'docker-compose down -v'
-                sh 'docker-compose up -d --build'
+                withCredentials([file(credentialsId: 'env-file', variable: 'ENV_FILE')]) {
+                    sh '''
+                    cp $ENV_FILE .env
+                    docker-compose down -v
+                    docker-compose up -d --build
+                    rm -f .env   # cleanup for safety
+                    '''
+                }
             }
-        }
+}
     }
 }
     
