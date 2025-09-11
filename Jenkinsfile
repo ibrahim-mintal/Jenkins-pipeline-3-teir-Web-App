@@ -1,8 +1,5 @@
 pipeline {
     agent any
-    environment {
-    OMDB_API_KEY = credentials('omdb-api-key')
-}
     stages {
         stage('Build') {
             steps {
