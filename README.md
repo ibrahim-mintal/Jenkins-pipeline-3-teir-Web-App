@@ -288,6 +288,18 @@ To achieve fully automated CI/CD with remote deployment:
 
 This integration will streamline the DevOps workflow and enable continuous deployment to production.
 
+### Testing Deployments
+
+To verify successful deployment on each server:
+
+- **Server 1 (192.168.24.129)**:
+  - Frontend: http://192.168.24.129:3000
+  - Backend Admin: http://192.168.24.129:5000/admin
+
+- **Server 2 (192.168.24.130)**:
+  - Frontend: http://192.168.24.130:3000
+  - Backend Admin: http://192.168.24.130:5000/admin
+
 ## Deployment Results
 
 Below are screenshots showing successful deployments on the target servers.
