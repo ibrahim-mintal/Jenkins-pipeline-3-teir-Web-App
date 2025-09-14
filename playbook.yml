@@ -25,7 +25,7 @@
         enabled: true
 
     # --------------------------
-    # Project Sync
+    # Project Sync files
     # --------------------------
     - name: Create /app directory 
       file:

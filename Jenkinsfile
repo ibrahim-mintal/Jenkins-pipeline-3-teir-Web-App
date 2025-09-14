@@ -44,15 +44,9 @@ pipeline {
 // --------------------- Deploy Application ---------------------
         stage('Deploy') {
             steps {
-                withCredentials([file(credentialsId: 'env-file', variable: 'ENV_FILE')]) {
-                    sh '''
-                    cp $ENV_FILE .env
-                    docker-compose down -v
-                    docker-compose up -d --build
-                    rm -f .env
-                    '''
-                }
+                sh 'ansible-playbook -i inventory.ini playbook.yml'
             }
+          }
         }
     }
 
@@ -61,4 +55,4 @@ pipeline {
         failure { echo "❌ Pipeline failed at build $BUILD_NUMBER" }
         always { cleanWs() }
     }
-}
+
