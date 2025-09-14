@@ -8,8 +8,9 @@ pipeline {
     }
 
     triggers {
-        githubPush()
-    }
+    pollSCM('H/2 * * * *')  // check every 2 minutes
+     }
+
 
     stages {
 // --------------------- Checkout Repo ---------------------
