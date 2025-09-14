@@ -45,7 +45,11 @@ pipeline {
 // --------------------- Deploy Application ---------------------
         stage('Deploy') {
             steps {
-                sh 'ansible-playbook -i inventory.ini playbook.yml'
+                sh '''
+
+                ansible-playbook -i inventory.ini playbook.yml
+
+                '''
             }
         }
     }

@@ -55,6 +55,15 @@
         group: root
         mode: '0644'
 
+    # -----------------------------------
+    # Cleanup Old Containers and Volumes
+    # -----------------------------------
+    - name: Stop and remove old containers + volumes (cleanup)
+      shell: |
+        cd /app && docker-compose down -v || true
+      ignore_errors: yes
+
+
     # --------------------------
     # Deploy with Docker Compose
     # --------------------------
