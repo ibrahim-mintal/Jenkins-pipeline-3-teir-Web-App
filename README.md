@@ -42,15 +42,6 @@ A full-stack web application for managing and reviewing movies, built with React
 
 ---
 
-## 🔥 Bonus Extensions
-
-- Use **Nginx reverse proxy** to route frontend → backend.
-- Add **Blue/Green deployment** using Ansible.
-- Use **Jenkins pipelines as code** (Jenkinsfile).
-- Add **automated integration tests** after deployment.
-
----
-
 👉 This project will give you **real DevOps hands-on** with:
 
 - **Docker** for microservices.
@@ -83,7 +74,15 @@ movie-review-app/
 │   └── Dockerfile         # Frontend container config
 ├── db/                    # Database files
 │   └── init.sql          # Database schema
-└── docker-compose.yml     # Container orchestration
+├── templates/             # Ansible Jinja2 templates
+│   └── frontend.env.j2    # Environment template for frontend
+├── ansible.cfg            # Ansible configuration
+├── inventory.ini          # Ansible inventory with server details
+├── playbook.yml           # Ansible playbook for deployment
+├── Jenkinsfile            # Jenkins pipeline definition
+├── docker-compose.yml     # Container orchestration
+├── install_docker.sh      # Docker installation script
+└── .gitignore             # Git ignore file
 ```
 
 ### Containerized Deployment
@@ -117,7 +116,7 @@ Before running this application, make sure you have the following installed:
 - [Docker Compose](https://docs.docker.com/compose/install/)
 - [OMDB API Key](http://www.omdbapi.com/apikey.aspx) (free tier available)
 
-## 🚀 Quick Start
+## 🚀 Quick Start (Locally)
 
 ### 1. Clone the Repository
 
@@ -133,22 +132,36 @@ Create a `.env` file in the root directory:
 OMDB_API_KEY=your_omdb_api_key_here
 ```
 
-### 3. Deploy with Docker-Compose
+### 3. Deploy with Ansible
 
 ```bash
 # Build and start all services
-docker-compose up --build
 
-# Or run in background
-docker-compose up -d --build
+ ansible-playbook -i inventory.ini playbook.yml 
 ```
 
-### 4. Access the Application
+### 4. Access the Application Locally
 
 - **Frontend**: http://localhost:3000
 - **Backend API**: http://localhost:5000
 - **Admin Panel**: http://localhost:5000/admin
 - **Database**: localhost:5432 (accessible from host)
+
+### 5. Access the Application Remotely
+
+After deployment to remote servers, access the application using the server IP addresses:
+
+- **Staging Server (192.168.24.129)**:
+  - **Frontend**: http://192.168.24.129:3000
+  - **Backend API**: http://192.168.24.129:5000
+  - **Admin Panel**: http://192.168.24.129:5000/admin
+
+- **Production Server (192.168.24.130)**:
+  - **Frontend**: http://192.168.24.130:3000
+  - **Backend API**: http://192.168.24.130:5000
+  - **Admin Panel**: http://192.168.24.130:5000/admin
+
+**Note**: Ensure that the remote servers have the necessary firewall rules to allow access to ports 3000 and 5000.
 
 ## 📡 API Endpoints
 
@@ -212,81 +225,40 @@ curl -X POST http://localhost:5000/api/movies \
 
 ### Production Deployment
 
-1. Set up your production environment with Docker and Docker Compose
+1. Set up your production environment with Ansible playbook
 2. Configure environment variables securely
-3. Use a reverse proxy (nginx) for SSL termination
-4. Set up database backups and monitoring
 5. Configure CI/CD pipeline for automated deployments
 
-### Scaling Considerations
+## Deployment Method
 
-- **Database**: Use connection pooling and read replicas for high traffic
-- **Backend**: Implement caching and rate limiting
-- **Frontend**: Use CDN for static assets
-- **Monitoring**: Add logging and monitoring with tools like Prometheus/Grafana
+This project uses a single deployment method for simplicity and consistency:
 
-## Deployment Methods
+### Jenkins Pipeline with Ansible Playbook
 
-This project supports multiple deployment strategies to suit different environments and requirements.
+The Jenkins pipeline automates the entire CI/CD process, including building Docker images, pushing them to Docker Hub, and deploying the application to remote servers using Ansible.
 
-### 1. Local Deployment with Jenkins Pipeline
+**Pipeline Stages**:
+1. **Checkout**: Pulls the latest code from the GitHub repository.
+2. **Build Images**: Builds Docker images for frontend and backend using the respective Dockerfiles.
+3. **Push Images**: Logs into Docker Hub and pushes the built images with a version tag (e.g., v1, v2).
+4. **Deploy**: Executes the Ansible playbook (`playbook.yml`) to deploy the application to remote servers defined in `inventory.ini`.
 
-Deploy the application locally on the Jenkins server using Docker Compose.
+**Deployment Process**:
+- Ansible installs Docker and required packages on target servers.
+- Syncs application files to `/app` directory on each server.
+- Generates environment files using Jinja2 templates.
+- Runs `docker-compose up -d --build` on each server to start the containers.
 
-- **Using Jenkinsfile-Deploy**: A simplified pipeline focused solely on deployment.
-  - Copies the `.env` file from Jenkins credentials.
-  - Runs `docker-compose down -v` to clean up previous containers.
-  - Executes `docker-compose up -d --build` to build and start services.
-- **Using Full Jenkinsfile**: Includes complete CI/CD with build, test, push, and deploy stages.
-  - Builds Docker images for frontend and backend.
-  - Pushes images to Docker Hub.
-  - Deploys locally using Docker Compose.
-
-**Command to trigger**:
-- Configure Jenkins job with the respective `Jenkinsfile`.
-- Pipeline triggers on GitHub push or manual build.
-
-### 2. Remote Deployment via Ansible Playbook
-
-Deploy the application to multiple remote servers using Ansible automation.
-
-- **Prerequisites**:
-  - Ansible installed on control machine.
-  - SSH access configured to target servers.
-  - `inventory.ini` configured with server details.
-- **Deployment Process**:
-  - Installs Docker and required packages on target servers.
-  - Syncs application files to `/app` directory.
-  - Generates environment files using Jinja2 templates.
-  - Runs `docker-compose up -d --build` on each server.
-
-**Command to deploy**:
+**Command to trigger deployment manually**:
 ```bash
 ansible-playbook -i inventory.ini playbook.yml
 ```
 
-This method is ideal for deploying to staging and production environments across multiple servers.
-
-### Next Step: Integrate Ansible with Jenkins
-
-To achieve fully automated CI/CD with remote deployment:
-
-1. **Modify Jenkinsfile**: Add a new "Deploy Remote" stage after "Push Images".
-2. **Install Ansible on Jenkins**: Ensure Ansible is available in the Jenkins environment.
-3. **Update Pipeline**:
-   ```groovy
-   stage('Deploy Remote') {
-       steps {
-           sh 'ansible-playbook -i inventory.ini playbook.yml'
-       }
-   }
-   ```
-4. **Benefits**:
-   - Complete automation: Code commit → Build → Push → Remote Deploy.
-   - Consistent deployments across environments.
-   - Rollback capabilities using tagged images.
-
-This integration will streamline the DevOps workflow and enable continuous deployment to production.
+**Benefits**:
+- Complete automation: Code commit → Build → Push → Remote Deploy.
+- Consistent deployments across environments.
+- Rollback capabilities using tagged images.
+- Simplified maintenance with a single deployment method.
 
 ### Testing Deployments
 
@@ -319,87 +291,6 @@ Below are screenshots showing successful deployments on the target servers.
 ### Ansible Deployment Output
 
 ![Ansible Result](Ansible%20Result.png)
-
----
-
-# 📅 7-Day DevOps Project Plan
-
-### **Day 1 – Project Setup & App Development**
-
-- ✅ Create a GitHub repo.
-- ✅ Build a simple **3-tier app**:
-    - **Frontend**: React or Nginx static HTML.
-    - **Backend**: Flask / Node.js REST API.
-    - **Database**: MySQL or PostgreSQL.
-- ✅ Run everything locally without Docker first.
-- **Deliverable**: Local app working (frontend talks to backend, backend talks to DB).
-
----
-
-### **Day 2 – Dockerization**
-
-- ✅ Write `Dockerfile` for backend.
-- ✅ Write `Dockerfile` for frontend.
-- ✅ Use official image for DB.
-- ✅ Create `docker-compose.yml` to run all 3 containers together.
-- ✅ Test app runs via `docker-compose up`.
-- **Deliverable**: Multi-container app running locally.
-
----
-
-### **Day 3 – Jenkins Setup**
-
-- ✅ Install Jenkins on a local VM or Docker container.
-- ✅ Install plugins: Git, Docker, Pipeline.
-- ✅ Connect Jenkins to GitHub (webhook or polling).
-- ✅ Test a basic job (print "Hello World").
-- **Deliverable**: Jenkins up & connected to GitHub.
-
----
-
-### **Day 4 – Jenkins CI Pipeline**
-
-- ✅ Write `Jenkinsfile` with stages:
-    1. Pull code from GitHub.
-    2. Build Docker images for frontend & backend.
-    3. Run unit tests (if any).
-    4. Push Docker images to **Docker Hub**.
-- ✅ Trigger pipeline via GitHub push.
-- **Deliverable**: Jenkins pipeline builds & pushes images successfully.
-
----
-
-### **Day 5 – Ansible Setup**
-
-- ✅ Set up **two target servers** (can be VMs on your machine, e.g., staging + prod).
-- ✅ Install Ansible on Jenkins server or local machine.
-- ✅ Write Ansible playbook:
-    - Install Docker on servers.
-    - Pull images from Docker Hub.
-    - Run containers (frontend, backend, DB).
-- ✅ Test deployment manually.
-- **Deliverable**: App deployed on remote servers via Ansible.
-
----
-
-### **Day 6 – Jenkins + Ansible Integration**
-
-- ✅ Add **deploy stage** in `Jenkinsfile` that runs Ansible playbook.
-- ✅ Run full pipeline:
-    1. Code commit → Jenkins builds → Docker Hub → Ansible deploys.
-- ✅ Verify app updates automatically on staging/prod servers.
-- **Deliverable**: Fully automated CI/CD pipeline.
-
----
-
-### **Day 7 – Testing & Enhancements**
-
-- ✅ Push multiple commits → verify pipeline updates app correctly.
-- ✅ Add **reverse proxy (Nginx)** in front of backend + frontend.
-- ✅ (Optional) Add **Blue-Green Deployment** with Ansible.
-- ✅ (Optional) Add integration tests in Jenkins pipeline.
-- ✅ Document the full setup (README with screenshots + commands).
-- **Deliverable**: Completed documented project.
 
 ---
 
