@@ -56,8 +56,8 @@ pipeline {
 // --------------------- Post Actions ---------------------
     
     post {
-        success { echo "✅ Successfully built & pushed images with tag $IMAGE_TAG" }
-        failure { echo "❌ Pipeline failed at build $BUILD_NUMBER" }
+        success { echo " Successfully built & pushed images with tag $IMAGE_TAG" }
+        failure { echo " Pipeline failed at build $BUILD_NUMBER" }
         always { cleanWs() }
     }
 }

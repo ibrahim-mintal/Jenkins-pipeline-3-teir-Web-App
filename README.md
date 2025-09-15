@@ -104,9 +104,9 @@ The application uses Docker Compose for container orchestration with the followi
 
 ## 📸 Output Results
 
-![Movie Review Backend](Movie%20Review%20Backend.png)
+![Movie Review Backend](results/Movie%20Review%20Backend.png)
 
-![Movie Review Frontend](Movie%20Review%20Frontend.png)
+![Movie Review Frontend](results/Movie%20Review%20Frontend.png)
 
 ## 📋 Prerequisites
 
@@ -280,17 +280,17 @@ Below are screenshots showing successful deployments on the target servers.
 
 | Frontend | Backend |
 |----------|---------|
-| ![Server1 Frontend](server1-frontend.png) | ![Server1 Backend](server1-backend.png) |
+| ![Server1 Frontend](results/server1-frontend.png) | ![Server1 Backend](results/server1-backend.png) |
 
 ### Server 2 (debian2 - 192.168.24.130)
 
 | Frontend | Backend |
 |----------|---------|
-| ![Server2 Frontend](server2-frontend.png) | ![Server2 Backend](server2-backend.png) |
+| ![Server2 Frontend](results/server2-frontend.png) | ![Server2 Backend](results/server2-backend.png) |
 
 ### Ansible Deployment Output
 
-![Ansible Result](Ansible%20Result.png)
+![Ansible Result](results/Ansible%20Result.png)
 
 ---
 
