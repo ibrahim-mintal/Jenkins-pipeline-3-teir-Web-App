@@ -106,7 +106,7 @@ Follow these step-by-step guides to build and deploy the application.
      - Build Docker images.
      - Run tests.
      - Push images to Docker Hub.
-     - Trigger Ansible deployment via `Jenkinsfile-Deploy`.
+     - Trigger Ansible deployment via `Jenkinsfile`.
 
 ---
 
