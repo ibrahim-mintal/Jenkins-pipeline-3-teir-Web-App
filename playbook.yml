@@ -1,6 +1,6 @@
 ---
 - name: Deploy 3-tier Movie Review App via Docker Compose
-  hosts: localhost
+  hosts: all
   become: true
 
   tasks:
