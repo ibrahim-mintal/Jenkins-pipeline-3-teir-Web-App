@@ -1,6 +1,6 @@
 ---
 - name: Deploy 3-tier Movie Review App via Docker Compose
-  hosts: all
+  hosts: localhost
   become: true
 
   tasks:
@@ -13,10 +13,13 @@
         state: present
         update_cache: yes
       loop:
-        - docker.io
-        - docker-compose-plugin
-        - git
-        - rsync
+          - docker-ce
+          - docker-ce-cli
+          - containerd.io
+          - docker-buildx-plugin
+          - docker-compose-plugin
+          - git
+          - rsync
 
     - name: Ensure Docker service is running
       service:
@@ -45,7 +48,7 @@
           - "--exclude=tests"
 
     # --------------------------
-    # Environment File
+    # Environment File so I can use  <nodes ip>:<port> to open frontend and backend instead of localhost:<port>
     # --------------------------
     - name: Generate frontend .env file for each server
       template:
